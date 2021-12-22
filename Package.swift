@@ -26,10 +26,10 @@ let package = Package(
             name: "SegmentedPicker",
             // dependencies: ["CGExtender", "Shapes"]
             dependencies: ["CGExtender", .product(name: "SwiftUI-Shapes", package: "Swiftui-Shapes")]
-            ),
-        .testTarget(
-            name: "SegmentedPickerTests",
-            dependencies: ["SegmentedPicker"]
-        )
+            )
+        // .testTarget(
+        //     name: "SegmentedPickerTests",
+        //     dependencies: ["SegmentedPicker"]
+        // )
     ]
 )
