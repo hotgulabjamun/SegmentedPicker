@@ -1,5 +1,5 @@
 import SwiftUI
-import Shapes
+import SwiftUI_Shapes
 
 // MARK: - Style Setup
 @available(iOS 13.0, macOS 10.15, watchOS 6.0 , *)
@@ -13,7 +13,7 @@ public protocol KSegmentedPickerStyle {
     associatedtype Body: View
     associatedtype Selection: View
     associatedtype DividerView: View
-    
+
     func makeDivider(isVertical: Bool) -> Self.DividerView
     func makeSelectionFill(configuration: KSegmentedPickerConfiguration) -> Self.Selection
     func makeBody(configuration: KSegmentedPickerConfiguration) -> Self.Body
@@ -44,7 +44,7 @@ public struct AnyKSegmentedPickerStyle: KSegmentedPickerStyle {
     public func makeSelectionFill(configuration: KSegmentedPickerConfiguration) -> some View {
         return self._makeSelectionFill(configuration)
     }
-    
+
     init<ST: KSegmentedPickerStyle>(_ style: ST) {
         self._makeDivider = style.makeDividerTypeErased
         self._makeBody = style.makeBodyTypeErased
@@ -68,8 +68,8 @@ public struct DefaultKSegmentedPickerStyle: KSegmentedPickerStyle {
             .foregroundColor(configuration.isSelected ? .white : .green)
             .padding()
     }
-    
-    
+
+
     public func makeSelectionFill(configuration: KSegmentedPickerConfiguration) -> some View {
         RoundedRectangle(cornerRadius: 5)
             .fill(Color.green)
@@ -115,7 +115,7 @@ public struct SegmentedPicker<Data: RandomAccessCollection, Content: View>: View
     var isDisabled: Bool = false
     private let data: Data
     private let itemView: (Data.Element) -> Content
-    
+
     public init(_ selected: Binding<Data.Element>, _ data: Data, @ViewBuilder itemView: @escaping (Data.Element) -> Content) {
         self.data = data
         self.itemView = itemView
@@ -127,7 +127,7 @@ public struct SegmentedPicker<Data: RandomAccessCollection, Content: View>: View
         self._selected = selected
         self.isVertical = isVertical
     }
-    
+
     var geometry: some View {
         Group {
             if isVertical {
@@ -151,7 +151,7 @@ public struct SegmentedPicker<Data: RandomAccessCollection, Content: View>: View
             }
         }
     }
-    
+
     func makeOptions(_ proxy: GeometryProxy, bounds: [Data.Element: Anchor<CGRect>]) -> some View  {
         Group {
             if isVertical {
@@ -167,36 +167,36 @@ public struct SegmentedPicker<Data: RandomAccessCollection, Content: View>: View
                     ForEach(self.data, id: \.self) { (element: Data.Element) in
                         self.style.makeBody(configuration: .init(isDisabled: self.isDisabled,  isSelected: self.selected == element, label: AnyView(self.itemView(element))))
                             .tag(element)
-                        
+
                     }
                 }
             }
         }
     }
-    
-    
-    
+
+
+
     func makeDividers(_ proxy: GeometryProxy, bounds: [Data.Element: Anchor<CGRect>]) -> some View {
         let spacing: [CGFloat] = bounds.map { self.isVertical ? proxy[$0.value].maxY : proxy[$0.value].maxX }.sorted(by: {$1 > $0}).dropLast()
-        
+
         return ZStack {
             ForEach(spacing, id: \.self) { (position)  in
                 Group {
                     if self.isVertical {
                         self.style.makeDivider(isVertical: self.isVertical)
                             .position(x: proxy.size.width/2, y: position )
-                        
+
                     } else {
                         self.style.makeDivider(isVertical: self.isVertical)
                             .position(x: position, y: proxy.size.height/2)
                     }
                 }
-                
+
             }
         }
-        
+
     }
-    
+
     func makePicker(_ proxy: GeometryProxy, bounds: [Data.Element: Anchor<CGRect>]) -> some View {
         ZStack {
             self.makeDividers(proxy , bounds: bounds)
@@ -228,7 +228,7 @@ public struct SegmentedPicker<Data: RandomAccessCollection, Content: View>: View
             self.currentlyInside = proxy[bounds[self.selected]!]
         }
     }
-    
+
     public var body: some View {
         geometry
             .overlayPreferenceValue(Key.self) { (bounds: [Data.Element: Anchor<CGRect>])  in
